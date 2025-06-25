@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
+import club.minemen.spigot.ClubSpigot;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -55,7 +55,7 @@ public class ChunkProviderServer implements IChunkProvider {
 
     public void queueUnload(int i, int j) {
         // PaperSpigot start - Asynchronous lighting updates
-        if (SpigotX.INSTANCE.getConfig().isDoChunkUnload()) {
+        if (ClubSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
             return;
         }
         Chunk chunk = chunks.get(LongHash.toLong(i, j));

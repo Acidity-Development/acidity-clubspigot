@@ -2,7 +2,7 @@ package net.minecraft.server;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.minexd.spigot.SpigotX;
+import club.minemen.spigot.ClubSpigot;
 import com.mojang.authlib.GameProfile;
 
 import java.util.Collection;
@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 // CraftBukkit start
-import com.minexd.spigot.knockback.KnockbackProfile;
 import net.jafama.FastMath;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.entity.CraftItem;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.Vector;
 // CraftBukkit end
 
 public abstract class EntityHuman extends EntityLiving {
@@ -968,139 +969,93 @@ public abstract class EntityHuman extends EntityLiving {
 
     public void attack(Entity entity) {
         if (entity.aD() && !entity.l(this)) {
-            float f = (float) this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
-            byte b0 = 0;
-            float f1;
-
-            if (entity instanceof EntityLiving) {
-                f1 = EnchantmentManager.a(this.bA(), ((EntityLiving) entity).getMonsterType());
-            } else {
-                f1 = EnchantmentManager.a(this.bA(), EnumMonsterType.UNDEFINED);
-            }
-
+            float f = (float)this.getAttributeInstance(GenericAttributes.ATTACK_DAMAGE).getValue();
+            int b0 = 0;
+            float f1 = 0.0f;
+            f1 = entity instanceof EntityLiving ? EnchantmentManager.a(this.bA(), ((EntityLiving)entity).getMonsterType()) : EnchantmentManager.a(this.bA(), EnumMonsterType.UNDEFINED);
             int i = b0 + EnchantmentManager.a(this);
-
             if (this.isSprinting()) {
                 ++i;
             }
-
-            if (f > 0.0F || f1 > 0.0F) {
-                boolean flag = !world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0F && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving; // PaperSpigot
-
-                if (flag && f > 0.0F) {
-                    f *= 1.5F;
+            if (f > 0.0f || f1 > 0.0f) {
+                boolean flag;
+                boolean bl = flag = !this.world.paperSpigotConfig.disablePlayerCrits && this.fallDistance > 0.0f && !this.onGround && !this.k_() && !this.V() && !this.hasEffect(MobEffectList.BLINDNESS) && this.vehicle == null && entity instanceof EntityLiving;
+                if (flag && f > 0.0f) {
+                    f *= 1.5f;
                 }
-
                 f += f1;
                 boolean flag1 = false;
                 int j = EnchantmentManager.getFireAspectEnchantmentLevel(this);
-
                 if (entity instanceof EntityLiving && j > 0 && !entity.isBurning()) {
-                    // CraftBukkit start - Call a combust event when somebody hits with a fire enchanted item
                     EntityCombustByEntityEvent combustEvent = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), 1);
-                    org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
-
+                    Bukkit.getPluginManager().callEvent(combustEvent);
                     if (!combustEvent.isCancelled()) {
                         flag1 = true;
                         entity.setOnFire(combustEvent.getDuration());
                     }
-                    // CraftBukkit end
                 }
-
-                // Kohi start
-                // Save the victim's velocity before they are potentially knocked back
-                double victimMotX = entity.motX;
-                double victimMotY = entity.motY;
-                double victimMotZ = entity.motZ;
-                // Kohi end
-
-                boolean damaged = entity.damageEntity(DamageSource.playerAttack(this), f);
-
-                if (damaged) {
-                    if (i > 0) {
-                        KnockbackProfile profile = this.getKnockbackProfile() == null ? SpigotX.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
-
-                        entity.g(
-                                (-MathHelper.sin(this.yaw * 3.1415927F / 180.0F) * (float) i * profile.getExtraHorizontal()), profile.getExtraVertical(),
-                                (MathHelper.cos(this.yaw * 3.1415927F / 180.0F) * (float) i * profile.getExtraHorizontal())
-                        );
-
-                        this.motX *= 0.6D;
-                        this.motZ *= 0.6D;
-                        this.setSprinting(false);
+                double d0 = entity.motX;
+                double d1 = entity.motY;
+                double d2 = entity.motZ;
+                boolean flag2 = entity.damageEntity(DamageSource.playerAttack(this), f);
+                if (flag2) {
+                    IComplex icomplex;
+                    if (this.isApplyingSprintKnockback()) {
+                        entity.g(-MathHelper.sin(this.yaw * (float)Math.PI / 180.0f) * (float)i * 0.5f, 0.1, MathHelper.cos(this.yaw * (float)Math.PI / 180.0f) * (float)i * 0.5f);
+                        this.setApplyingSprintKnockback(false);
                     }
-
-                    // Kohi start
                     if (entity instanceof EntityPlayer && entity.velocityChanged) {
-                        EntityPlayer attackedPlayer = (EntityPlayer) entity;
-                        PlayerVelocityEvent event = new PlayerVelocityEvent(attackedPlayer.getBukkitEntity(), attackedPlayer.getBukkitEntity().getVelocity());
-
+                        Player player = (Player)((Object)entity.getBukkitEntity());
+                        Vector velocity = new Vector(d0, d1, d2);
+                        PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
                         this.world.getServer().getPluginManager().callEvent(event);
-
                         if (!event.isCancelled()) {
-                            attackedPlayer.getBukkitEntity().setVelocityDirect(event.getVelocity());
-                            attackedPlayer.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(attackedPlayer));
+                            if (!velocity.equals(event.getVelocity())) {
+                                player.setVelocity(event.getVelocity());
+                            }
+                            ((EntityPlayer)entity).playerConnection.sendPacket(new PacketPlayOutEntityVelocity(entity));
+                            entity.velocityChanged = false;
+                            entity.motX = d0;
+                            entity.motY = d1;
+                            entity.motZ = d2;
                         }
-
-                        attackedPlayer.velocityChanged = false;
-                        attackedPlayer.motX = victimMotX;
-                        attackedPlayer.motY = victimMotY;
-                        attackedPlayer.motZ = victimMotZ;
                     }
-                    // Kohi end
-
                     if (flag) {
                         this.b(entity);
                     }
-
-                    if (f1 > 0.0F) {
+                    if (f1 > 0.0f) {
                         this.c(entity);
                     }
-
-                    if (f >= 18.0F) {
+                    if (f >= 18.0f) {
                         this.b(AchievementList.F);
                     }
-
                     this.p(entity);
                     if (entity instanceof EntityLiving) {
-                        EnchantmentManager.a((EntityLiving) entity, this);
+                        EnchantmentManager.a((EntityLiving)entity, (Entity)this);
                     }
-
                     EnchantmentManager.b(this, entity);
                     ItemStack itemstack = this.bZ();
-                    Object object = entity;
-
-                    if (entity instanceof EntityComplexPart) {
-                        IComplex icomplex = ((EntityComplexPart) entity).owner;
-
-                        if (icomplex instanceof EntityLiving) {
-                            object = icomplex;
-                        }
+                    Entity object = entity;
+                    if (entity instanceof EntityComplexPart && (icomplex = ((EntityComplexPart)entity).owner) instanceof EntityLiving) {
+                        object = (EntityLiving)((Object)icomplex);
                     }
-
                     if (itemstack != null && object instanceof EntityLiving) {
-                        itemstack.a((EntityLiving) object, this);
-                        // CraftBukkit - bypass infinite items; <= 0 -> == 0
+                        itemstack.a((EntityLiving)object, this);
                         if (itemstack.count == 0) {
                             this.ca();
                         }
                     }
-
                     if (entity instanceof EntityLiving) {
-                        this.a(StatisticList.w, Math.round(f * 10.0F));
+                        this.a(StatisticList.w, Math.round(f * 10.0f));
                         if (j > 0) {
-                            // CraftBukkit start - Call a combust event when somebody hits with a fire enchanted item
                             EntityCombustByEntityEvent combustEvent = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), j * 4);
-                            org.bukkit.Bukkit.getPluginManager().callEvent(combustEvent);
-
+                            Bukkit.getPluginManager().callEvent(combustEvent);
                             if (!combustEvent.isCancelled()) {
                                 entity.setOnFire(combustEvent.getDuration());
                             }
-                            // CraftBukkit end
                         }
                     }
-
-                    this.applyExhaustion(world.spigotConfig.combatExhaustion); // Spigot - Change to use configurable value
+                    this.applyExhaustion(this.world.spigotConfig.combatExhaustion);
                 } else if (flag1) {
                     entity.extinguish();
                 }

@@ -1,7 +1,7 @@
 package org.bukkit.craftbukkit;
 
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.SpigotXConfig;
+import club.minemen.spigot.ClubSpigot;
+import club.minemen.spigot.ClubSpigotConfig;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -730,8 +730,8 @@ public final class CraftServer implements Server {
         org.github.paperspigot.PaperSpigotConfig.init((File) console.options.valueOf("spigot-settings")); // PaperSpigot
 
         // SpigotX
-        SpigotX.INSTANCE.setConfig(new SpigotXConfig());
-        SpigotX.INSTANCE.registerCommands();
+        ClubSpigot.INSTANCE.setConfig(new ClubSpigotConfig());
+        ClubSpigot.INSTANCE.registerCommands();
 
         for (WorldServer world : console.worlds) {
             world.worldData.setDifficulty(difficulty);

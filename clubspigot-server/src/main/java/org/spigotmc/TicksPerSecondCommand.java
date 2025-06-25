@@ -1,6 +1,6 @@
 package org.spigotmc;
 
-import com.minexd.spigot.util.DateUtil;
+import club.minemen.spigot.util.DateUtil;
 import java.lang.management.ManagementFactory;
 
 import net.minecraft.server.DedicatedServer;

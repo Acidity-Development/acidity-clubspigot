@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.minexd.spigot.knockback.KnockbackProfile;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -18,20 +17,6 @@ import org.bukkit.projectiles.ProjectileSource;
  * Represents a living entity, such as a monster or player
  */
 public interface LivingEntity extends Entity, Damageable, ProjectileSource {
-
-    //RageSpigot start
-    /**
-     * Gets the knockback profile of this player.
-     */
-    public KnockbackProfile getKnockbackProfile();
-
-    /**
-     * Sets the knockback profile of this player. The player's knockback
-     * profile overrides the global knockback profile.
-     */
-    public void setKnockbackProfile(KnockbackProfile profile);
-    //RageSpigot end
-
     /**
      * Gets the height of the living entity's eyes above its Location.
      *

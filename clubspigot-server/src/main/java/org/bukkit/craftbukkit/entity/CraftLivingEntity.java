@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import com.minexd.spigot.knockback.KnockbackProfile;
 import net.minecraft.server.DamageSource;
 import net.minecraft.server.EntityArmorStand;
 import net.minecraft.server.EntityArrow;
@@ -64,19 +63,6 @@ import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
 public class CraftLivingEntity extends CraftEntity implements LivingEntity {
-
-    // SpigotX start
-    @Override
-    public KnockbackProfile getKnockbackProfile() {
-        return getHandle().getKnockbackProfile();
-    }
-
-    @Override
-    public void setKnockbackProfile(KnockbackProfile profile) {
-        getHandle().setKnockbackProfile(profile);
-    }
-    // SpigotX end
-
     private CraftEntityEquipment equipment;
 
     public CraftLivingEntity(final CraftServer server, final EntityLiving entity) {

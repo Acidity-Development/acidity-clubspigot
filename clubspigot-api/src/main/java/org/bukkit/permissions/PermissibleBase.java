@@ -1,6 +1,5 @@
 package org.bukkit.permissions;
 
-import com.minexd.spigot.SpigotXBridge;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -78,10 +77,6 @@ public class PermissibleBase implements Permissible {
 
             boolean isOp = isOp();
 
-            if (SpigotXBridge.disableOpPermissions) {
-                isOp = false;
-            }
-
             if (perm != null) {
                 return perm.getDefault().getValue(isOp);
             } else {
@@ -102,10 +97,6 @@ public class PermissibleBase implements Permissible {
         }
 
         boolean isOp = isOp();
-
-        if (SpigotXBridge.disableOpPermissions) {
-            isOp = false;
-        }
 
         return perm.getDefault().getValue(isOp);
     }

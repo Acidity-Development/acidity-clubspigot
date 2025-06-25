@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
+import club.minemen.spigot.ClubSpigot;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -471,7 +471,7 @@ public abstract class EntityInsentient extends EntityLiving {
             return;
         }
         // Spigot End
-        if(SpigotX.INSTANCE.getConfig().isMobAIEnabled()) {
+        if(ClubSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
             this.world.methodProfiler.a("sensing");
             this.bk.a();
             this.world.methodProfiler.b();
@@ -488,7 +488,7 @@ public abstract class EntityInsentient extends EntityLiving {
         this.world.methodProfiler.a("mob tick");
         this.E();
         this.world.methodProfiler.b();
-        if(SpigotX.INSTANCE.getConfig().isMobAIEnabled()) {
+        if(ClubSpigot.INSTANCE.getConfig().isMobAIEnabled()) {
             this.world.methodProfiler.a("controls");
             this.world.methodProfiler.a("move");
             this.moveController.c();

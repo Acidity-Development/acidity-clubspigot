@@ -1,12 +1,11 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.event.potion.PotionEffectAddEvent;
-import com.minexd.spigot.event.potion.PotionEffectExpireEvent;
-import com.minexd.spigot.event.potion.PotionEffectExtendEvent;
-import com.minexd.spigot.event.potion.PotionEffectRemoveEvent;
-import com.minexd.spigot.knockback.KnockbackProfile;
-import com.minexd.spigot.util.CraftPotionUtil;
+import club.minemen.spigot.ClubSpigot;
+import club.minemen.spigot.event.potion.PotionEffectAddEvent;
+import club.minemen.spigot.event.potion.PotionEffectExpireEvent;
+import club.minemen.spigot.event.potion.PotionEffectExtendEvent;
+import club.minemen.spigot.event.potion.PotionEffectRemoveEvent;
+import club.minemen.spigot.util.CraftPotionUtil;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Maps;
@@ -43,17 +42,18 @@ public abstract class EntityLiving extends Entity {
     private static final UUID a = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final AttributeModifier b = (new AttributeModifier(EntityLiving.a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
 
-    // SpigotX start
-    private KnockbackProfile knockbackProfile;
+    private boolean applyingSprintKnockback;
 
-    public KnockbackProfile getKnockbackProfile() {
-        return knockbackProfile;
+    // ClubSpigot(?) start
+    public void setApplyingSprintKnockback(boolean flag) {
+        this.applyingSprintKnockback = flag;
     }
 
-    public void setKnockbackProfile(KnockbackProfile profile) {
-        this.knockbackProfile = profile;
+    public boolean isApplyingSprintKnockback() {
+        return this.applyingSprintKnockback;
     }
-    // SpigotX end
+
+    // ClubSpigot(?) end
 
     private AttributeMapBase c;
     public CombatTracker combatTracker = new CombatTracker(this);
@@ -944,26 +944,27 @@ public abstract class EntityLiving extends Entity {
     public void a(Entity entity, float f, double d0, double d1) {
         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
             this.ai = true;
-
-            KnockbackProfile profile = this.getKnockbackProfile() == null ? SpigotX.INSTANCE.getConfig().getCurrentKb() : this.getKnockbackProfile();
-
-            // Kohi start - configurable knockback
-            double magnitude = MathHelper.sqrt(d0 * d0 + d1 * d1);
-
-            this.motX /= profile.getFriction();
-            this.motY /= profile.getFriction();
-            this.motZ /= profile.getFriction();
-
-            this.motX -= d0 / magnitude * profile.getHorizontal();
-            this.motY += profile.getVertical();
-            this.motZ -= d1 / magnitude * profile.getHorizontal();
-
-            if (this.motY > profile.getVerticalLimit()) {
-                this.motY = profile.getVerticalLimit();
+            float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
+            float f2 = 0.4f;
+            float f3 = 0.4f;
+            double knockbackReductionHorizontal = 1.0 - ClubSpigot.INSTANCE.getConfig().getKnockbackHorizontal();
+            double knockbackReductionVertical = 1.0 - ClubSpigot.INSTANCE.getConfig().getKnockbackVertical();
+            double frictionHorizontal = 2.0 - knockbackReductionHorizontal;
+            double frictionVertical = 2.0 - knockbackReductionVertical - 0.25;
+            f2 = (float)((double)f2 * (1.0 - knockbackReductionHorizontal));
+            f3 = (float)((double)f3 * (1.0 - knockbackReductionVertical));
+            this.motX /= frictionHorizontal;
+            this.motY /= frictionVertical;
+            this.motZ /= frictionHorizontal;
+            this.motX -= d0 / (double)f1 * (double)f2;
+            this.motY += (double)f3;
+            this.motZ -= d1 / (double)f1 * (double)f2;
+            if (this.motY > (double)0.4f) {
+                this.motY = 0.4f;
             }
-            // Kohi end
         }
     }
+
 
     protected String bo() {
         return "game.neutral.hurt";
@@ -1285,6 +1286,8 @@ public abstract class EntityLiving extends Entity {
 
     public void setSprinting(boolean flag) {
         super.setSprinting(flag);
+
+        this.setApplyingSprintKnockback(flag);
 
         AttributeInstance attributeinstance = this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED);
 

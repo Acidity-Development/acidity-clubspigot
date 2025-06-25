@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.handler.PacketHandler;
+import club.minemen.spigot.ClubSpigot;
+import club.minemen.spigot.handler.PacketHandler;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.channel.Channel;
@@ -153,7 +153,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet> {
             }
             if (this.m instanceof PlayerConnection) {
                 try {
-                    for (PacketHandler handler : SpigotX.INSTANCE.getPacketHandlers()) {
+                    for (PacketHandler handler : ClubSpigot.INSTANCE.getPacketHandlers()) {
                         handler.handleReceivedPacket((PlayerConnection) this.m, packet);
                     }
                 } catch (Exception e) {

@@ -1,6 +1,6 @@
 package org.spigotmc;
 
-import com.minexd.spigot.SpigotX;
+import club.minemen.spigot.ClubSpigot;
 
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class ActivationRange
      * @param world
      */
     public static void activateEntities(World world) {
-        if (!SpigotX.INSTANCE.getConfig().isEntityActivation()) {
+        if (!ClubSpigot.INSTANCE.getConfig().isEntityActivation()) {
             return;
         }
 

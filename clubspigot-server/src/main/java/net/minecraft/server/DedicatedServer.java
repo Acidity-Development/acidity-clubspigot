@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.SpigotXConfig;
+import club.minemen.spigot.ClubSpigot;
+import club.minemen.spigot.ClubSpigotConfig;
 
 import com.google.common.collect.Lists;
 
@@ -167,8 +167,8 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
         org.github.paperspigot.PaperSpigotConfig.registerCommands();
 
         // Load SpigotX
-        SpigotX.INSTANCE.setConfig(new SpigotXConfig());
-        SpigotX.INSTANCE.registerCommands();
+        ClubSpigot.INSTANCE.setConfig(new ClubSpigotConfig());
+        ClubSpigot.INSTANCE.registerCommands();
 
         DedicatedServer.LOGGER.info("* Allocated memory: " + (Runtime.getRuntime().maxMemory() / 1024L / 1024L));
         DedicatedServer.LOGGER.info("* Online Mode: " + this.getOnlineMode());

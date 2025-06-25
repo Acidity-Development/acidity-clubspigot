@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
+import club.minemen.spigot.ClubSpigot;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
@@ -248,7 +248,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
         timings.doChunkUnload.startTiming();
 
-        if (SpigotX.INSTANCE.getConfig().isDoChunkUnload()) {
+        if (ClubSpigot.INSTANCE.getConfig().isDoChunkUnload()) {
             this.methodProfiler.c("chunkSource");
             this.chunkProvider.unloadChunks();
         }
@@ -488,7 +488,7 @@ public class WorldServer extends World implements IAsyncTaskHandler {
 
                 this.methodProfiler.c("tickBlocks");
 
-                if (SpigotX.INSTANCE.getConfig().isBlockOperations()) {
+                if (ClubSpigot.INSTANCE.getConfig().isDoChunkUnload()) { // this it?
                     timings.chunkTicksBlocks.startTiming();
 
                     i1 = this.getGameRules().c("randomTickSpeed");

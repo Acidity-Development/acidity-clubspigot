@@ -1,7 +1,7 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.SpigotX;
-import com.minexd.spigot.util.OptimizedRemoveUtil;
+import club.minemen.spigot.ClubSpigot;
+import club.minemen.spigot.util.OptimizedRemoveUtil;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -1630,7 +1630,7 @@ public abstract class World implements IBlockAccess {
         int j = MathHelper.floor(entity.locZ);
 
         // Spigot start
-        if (SpigotX.INSTANCE.getConfig().isEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
+        if (ClubSpigot.INSTANCE.getConfig().isEntityActivation() && !org.spigotmc.ActivationRange.checkIfActive(entity)) {
             entity.ticksLived++;
             entity.inactiveTick();
             // PaperSpigot start - Remove entities in unloaded chunks

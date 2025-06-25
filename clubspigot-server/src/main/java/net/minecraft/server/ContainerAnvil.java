@@ -1,6 +1,6 @@
 package net.minecraft.server;
 
-import com.minexd.spigot.event.inventory.PrepareAnvilRepairEvent;
+import club.minemen.spigot.event.inventory.PrepareAnvilRepairEvent;
 
 import java.util.Iterator;
 import java.util.Map;
